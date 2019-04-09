@@ -1,6 +1,7 @@
 class Game
   def initialize
     @ans = gen_answer
+    @ans = "EABD"
     @guesses = []
     @game_over = false
     @end_condition = 0
@@ -13,6 +14,7 @@ class Game
     puts "MASTERMIND - console edition"
     puts "\nThe computer has generated a code"
     puts "Guess a 4 letter combination of the following: ABCDEF"
+
   end
 
   def gen_answer
@@ -27,8 +29,10 @@ class Game
     #runs the game, checks for completion and whatnot
     until @game_over
       @guesses.push(Guess.new(@ans))
+      print "\n"*30
       @guesses.each { |g|
         g.draw
+
       }
       check_endgame
     end
@@ -69,21 +73,29 @@ class Guess
     compare(ans)
   end
 
+
   def compare(ans)
-    #gets hits and misses from a certain answer string
-    hits = 0
-    misses = 0
+  #gets hits and misses from a certain answer string
+    guess = @guess.split("")
     code = ans.split("")
-    code_copy = code
-    @guess.split("").each_with_index { |val,index|
-      if val == code[index]
-        hits += 1
-      elsif code_copy.include? val
-        code_copy.delete(val)
-        misses += 1
+    hm_array = Array.new(4,0)
+    #puts hits into hm_array at indices they occur
+    guess.each_with_index { |val,i| hm_array[i] = "H" if val == code[i] }
+    #removes hits from code
+    hm_array.each_with_index { |hm,i| code.delete_at(i) if hm == "H" }
+    print code
+    puts " "
+    print hm_array
+    puts " "
+    #Adds misses to hmarray, prevents miss double counting
+    hm_array.each_with_index { |hm,i|
+      if hm == 0 && code.include?(guess[i])
+        hm_array[i] = 'M'
+        code.delete(guess[i])
       end
     }
-    @hits,@misses = hits, misses
+    @hits = hm_array.count { |hm| hm == "H" }
+    @misses = hm_array.count { |hm| hm == "M" }
   end
 
   def input_guess
