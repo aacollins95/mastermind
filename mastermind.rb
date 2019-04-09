@@ -1,7 +1,6 @@
 class Game
   def initialize
     @ans = gen_answer
-    @ans = "EABD"
     @guesses = []
     @game_over = false
     @end_condition = 0
@@ -55,7 +54,7 @@ class Game
     if @end_condition == 'Win'
       puts "Congratulations, you're a winner!"
     else
-      puts "LOSER"
+      puts "You lose... we were looking for '#{@ans}'"
     end
   end
 
@@ -82,16 +81,12 @@ class Guess
     #puts hits into hm_array at indices they occur
     guess.each_with_index { |val,i| hm_array[i] = "H" if val == code[i] }
     #removes hits from code
-    hm_array.each_with_index { |hm,i| code.delete_at(i) if hm == "H" }
-    print code
-    puts " "
-    print hm_array
-    puts " "
+    hm_array.each_with_index { |hm,i| code[i] = 0 if hm == "H" }
     #Adds misses to hmarray, prevents miss double counting
     hm_array.each_with_index { |hm,i|
       if hm == 0 && code.include?(guess[i])
         hm_array[i] = 'M'
-        code.delete(guess[i])
+        code[code.find_index(guess[i])] = 0
       end
     }
     @hits = hm_array.count { |hm| hm == "H" }
